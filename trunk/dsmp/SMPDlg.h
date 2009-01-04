@@ -22,15 +22,17 @@
 #endif
 
 #include "filelist.h"
+#include <list>
 
 
 //Do not add custom headers between 
 //Header Include Start and Header Include End.
 //wxDev-C++ designer will remove them. Add custom headers after the block.
 ////Header Include Start
-#include <wx/checkbox.h>
 #include <wx/timer.h>
+#include <wx/menu.h>
 #include <wx/listctrl.h>
+#include <wx/checkbox.h>
 #include <wx/mediactrl.h>
 #include <wx/slider.h>
 #include <wx/button.h>
@@ -41,7 +43,7 @@
 
 ////Dialog Style Start
 #undef SMPDlg_STYLE
-#define SMPDlg_STYLE wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | wxTHICK_FRAME | wxDIALOG_NO_PARENT | wxMINIMIZE_BOX | wxMAXIMIZE_BOX | wxCLOSE_BOX
+#define SMPDlg_STYLE wxWANTS_CHARS | wxALWAYS_SHOW_SB | wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | wxTHICK_FRAME | wxDIALOG_NO_PARENT | wxMINIMIZE_BOX | wxMAXIMIZE_BOX | wxCLOSE_BOX
 ////Dialog Style End
 
 class SMPDlg : public wxDialog
@@ -51,6 +53,9 @@ class SMPDlg : public wxDialog
 		
 	public:
 		SMPDlg(wxWindow *parent, wxWindowID id = 1, const wxString &title = wxT("SMP"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = SMPDlg_STYLE);
+	public:
+		// No description
+		void AddToQueue(wxCommandEvent &event);
 		virtual ~SMPDlg();
 		void WxButton1Click(wxCommandEvent& event);
 		void WxMediaCtrl1MediaLoaded(wxMediaEvent& event);
@@ -65,20 +70,36 @@ class SMPDlg : public wxDialog
 		void NextButtonClick(wxCommandEvent& event);
 		void WxListCtrl1ItemActivated(wxListEvent& event);
 		void WxListCtrl1KeyDown(wxListEvent& event);
+		void PreviousButtonClick(wxCommandEvent& event);
+		void StopButtonClick(wxCommandEvent& event);
+		void RandomCheckboxClick(wxCommandEvent& event);
+		void WxButton2Click(wxCommandEvent& event);
+		void SavePlaylistClick(wxCommandEvent& event);
+		void WxListCtrl1RightClick(wxListEvent& event);
+		void SavePlaylistUpdateUI0(wxUpdateUIEvent& event);
+		void SMPDlgRightUP(wxMouseEvent& event);
+		void LoadPlaylistClick(wxCommandEvent& event);
+		void SMPDlgDropFiles(wxDropFilesEvent& event);
+		void WxListCtrl1ColRightClick(wxListEvent& event);
+		void AddButtonClick(wxCommandEvent& event);
+		void PlaylistsButtonClick(wxCommandEvent& event);
 	
 	private:
 		//Do not add custom control declarations between 
 		//GUI Control Declaration Start and GUI Control Declaration End.
 		//wxDev-C++ will remove them. Add custom code after the block.
 		////GUI Control Declaration Start
-		wxCheckBox *RandomCheckbox;
+		wxMenu *WxPopupMenu1;
 		wxTimer *WxTimer1;
+		wxMenu *AddMenu;
+		wxMenu *PlaylistMenu;
 		wxListCtrl *WxListCtrl1;
+		wxCheckBox *RandomCheckbox;
 		wxMediaCtrl *WxMediaCtrl1;
 		wxSlider *WxSlider2;
 		wxSlider *WxSlider1;
-		wxButton *WxButton2;
-		wxButton *WxButton1;
+		wxButton *AddButton;
+		wxButton *PlaylistsButton;
 		wxBitmapButton *NextButton;
 		wxBitmapButton *StopButton;
 		wxBitmapButton *PlayButton;
@@ -97,14 +118,28 @@ class SMPDlg : public wxDialog
 		enum
 		{
 			////GUI Enum Control ID Start
-			ID_RANDOMCHECKBOX = 1018,
+			ID_MNU_PLAY_PAUSE_1019 = 1019,
+			ID_MNU_STOP_1020 = 1020,
+			ID_MNU_NEXT_1021 = 1021,
+			ID_MNU_PREVIOUS_1022 = 1022,
+			ID_MNU_ADDFOLDER_1023 = 1023,
+			ID_MNU_SAVEPLAYLIST_1024 = 1024,
+			ID_MNU_LOADPLAYLIST_1025 = 1025,
+			
 			ID_WXTIMER1 = 1017,
+			ID_MNU_ADDFILES_1026 = 1026,
+			ID_MNU_ADDFOLDER_1027 = 1027,
+			
+			ID_MNU_LOADPLAYLIST_1028 = 1028,
+			ID_MNU_SAVEPLAYLIST_1029 = 1029,
+			
 			ID_WXLISTCTRL1 = 1015,
+			ID_RANDOMCHECKBOX = 1018,
 			ID_WXMEDIACTRL1 = 1016,
 			ID_WXSLIDER2 = 1014,
 			ID_WXSLIDER1 = 1013,
-			ID_WXBUTTON2 = 1008,
-			ID_WXBUTTON1 = 1007,
+			ID_ADDBUTTON = 1008,
+			ID_PLAYLISTS = 1007,
 			ID_NEXTBUTTON = 1006,
 			ID_STOPBUTTON = 1005,
 			ID_PLAYBUTTON = 1004,
@@ -127,6 +162,11 @@ class SMPDlg : public wxDialog
         long selItem;
 		// No description
 		void PlayThisFile(long id);
+		// No description
+		void PlayFromQueue();
+		std::list<wxString> lastPlayed, nextPlay;
+		// No description
+		void PlayNextFile();
 };
 
 #endif
