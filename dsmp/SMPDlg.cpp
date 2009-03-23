@@ -49,10 +49,19 @@
 ////Event Table Start
 BEGIN_EVENT_TABLE(SMPDlg,wxDialog)
 	////Manual Code Start
+	EVT_HOTKEY(ID_HOT_NEXT, SMPDlg::HotKeyNext)
+	EVT_HOTKEY(ID_HOT_STOP, SMPDlg::HotKeyStop)
+	EVT_HOTKEY(ID_HOT_PLAY, SMPDlg::HotKeyPlay)
+	EVT_HOTKEY(ID_HOT_PREV, SMPDlg::HotKeyPrev)
 	////Manual Code End
 	
 	EVT_CLOSE(SMPDlg::OnClose)
 	EVT_DROP_FILES(SMPDlg::SMPDlgDropFiles)
+	EVT_TIMER(ID_WXTIMER1,SMPDlg::WxTimer1Timer)
+	EVT_MENU(ID_MNU_ADDFILES_1026 , SMPDlg::WxButton2Click)
+	EVT_MENU(ID_MNU_ADDFOLDER_1027 , SMPDlg::WxButton1Click)
+	EVT_MENU(ID_MNU_LOADPLAYLIST_1028 , SMPDlg::LoadPlaylistClick)
+	EVT_MENU(ID_MNU_SAVEPLAYLIST_1029 , SMPDlg::SavePlaylistClick)
 	EVT_MENU(ID_MNU_PLAY_PAUSE_1019 , SMPDlg::PlayButtonClick)
 	EVT_MENU(ID_MNU_STOP_1020 , SMPDlg::StopButtonClick)
 	EVT_MENU(ID_MNU_NEXT_1021 , SMPDlg::NextButtonClick)
@@ -61,11 +70,6 @@ BEGIN_EVENT_TABLE(SMPDlg,wxDialog)
 	EVT_MENU(ID_MNU_SAVEPLAYLIST_1024 , SMPDlg::SavePlaylistClick)
 	EVT_UPDATE_UI(ID_MNU_SAVEPLAYLIST_1024 , SMPDlg::SavePlaylistUpdateUI0)
 	EVT_MENU(ID_MNU_LOADPLAYLIST_1025 , SMPDlg::LoadPlaylistClick)
-	EVT_TIMER(ID_WXTIMER1,SMPDlg::WxTimer1Timer)
-	EVT_MENU(ID_MNU_ADDFILES_1026 , SMPDlg::WxButton2Click)
-	EVT_MENU(ID_MNU_ADDFOLDER_1027 , SMPDlg::WxButton1Click)
-	EVT_MENU(ID_MNU_LOADPLAYLIST_1028 , SMPDlg::LoadPlaylistClick)
-	EVT_MENU(ID_MNU_SAVEPLAYLIST_1029 , SMPDlg::SavePlaylistClick)
 	
 	EVT_LIST_ITEM_ACTIVATED(ID_WXLISTCTRL1,SMPDlg::WxListCtrl1ItemActivated)
 	EVT_LIST_KEY_DOWN(ID_WXLISTCTRL1,SMPDlg::WxListCtrl1KeyDown)
@@ -96,6 +100,7 @@ void SMPError(wxString errorString)
 SMPDlg::SMPDlg(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &position, const wxSize& size, long style)
 : wxDialog(parent, id, title, position, size, style)
 {
+    WxMediaCtrl1 = NULL;
 	CreateGUIControls();
 	selItem = -1;
     lastPlayed.clear();
@@ -145,6 +150,13 @@ SMPDlg::SMPDlg(wxWindow *parent, wxWindowID id, const wxString &title, const wxP
             }
         }
     }
+    
+    //register hot keys
+    RegisterHotKey(ID_HOT_PLAY, wxMOD_CONTROL | wxMOD_ALT, 88);
+    RegisterHotKey(ID_HOT_STOP, wxMOD_CONTROL | wxMOD_ALT, 67);
+    RegisterHotKey(ID_HOT_NEXT, wxMOD_CONTROL | wxMOD_ALT, 86);
+    RegisterHotKey(ID_HOT_PREV, wxMOD_CONTROL | wxMOD_ALT, 90);
+    WxSlider2->SetValue(long(WxMediaCtrl1->GetVolume() * 100));
      
         
 }
@@ -213,6 +225,14 @@ void SMPDlg::CreateGUIControls()
 	WxListCtrl1->InsertColumn(0,wxT("Directory"),wxLIST_FORMAT_LEFT,100 );
 	WxFlexGridSizer1->Add(WxListCtrl1,1,wxALIGN_LEFT | wxEXPAND | wxALL,5);
 
+	WxPopupMenu1 = new wxMenu(wxT(""));WxPopupMenu1->Append(ID_MNU_PLAY_PAUSE_1019, wxT("Play/Pause"), wxT(""), wxITEM_NORMAL);
+	WxPopupMenu1->Append(ID_MNU_STOP_1020, wxT("Stop"), wxT(""), wxITEM_NORMAL);
+	WxPopupMenu1->Append(ID_MNU_NEXT_1021, wxT("Next"), wxT(""), wxITEM_NORMAL);
+	WxPopupMenu1->Append(ID_MNU_PREVIOUS_1022, wxT("Previous"), wxT(""), wxITEM_NORMAL);
+	WxPopupMenu1->Append(ID_MNU_ADDFOLDER_1023, wxT("Add Folder"), wxT(""), wxITEM_NORMAL);
+	WxPopupMenu1->Append(ID_MNU_SAVEPLAYLIST_1024, wxT("Save Playlist"), wxT(""), wxITEM_NORMAL);
+	WxPopupMenu1->Append(ID_MNU_LOADPLAYLIST_1025, wxT("Load Playlist"), wxT(""), wxITEM_NORMAL);
+
 	PlaylistMenu = new wxMenu(wxT(""));PlaylistMenu->Append(ID_MNU_LOADPLAYLIST_1028, wxT("Load Playlist"), wxT(""), wxITEM_NORMAL);
 	PlaylistMenu->Append(ID_MNU_SAVEPLAYLIST_1029, wxT("Save Playlist"), wxT(""), wxITEM_NORMAL);
 
@@ -221,14 +241,6 @@ void SMPDlg::CreateGUIControls()
 
 	WxTimer1 = new wxTimer();
 	WxTimer1->SetOwner(this, ID_WXTIMER1);
-
-	WxPopupMenu1 = new wxMenu(wxT(""));WxPopupMenu1->Append(ID_MNU_PLAY_PAUSE_1019, wxT("Play/Pause"), wxT(""), wxITEM_NORMAL);
-	WxPopupMenu1->Append(ID_MNU_STOP_1020, wxT("Stop"), wxT(""), wxITEM_NORMAL);
-	WxPopupMenu1->Append(ID_MNU_NEXT_1021, wxT("Next"), wxT(""), wxITEM_NORMAL);
-	WxPopupMenu1->Append(ID_MNU_PREVIOUS_1022, wxT("Previous"), wxT(""), wxITEM_NORMAL);
-	WxPopupMenu1->Append(ID_MNU_ADDFOLDER_1023, wxT("Add Folder"), wxT(""), wxITEM_NORMAL);
-	WxPopupMenu1->Append(ID_MNU_SAVEPLAYLIST_1024, wxT("Save Playlist"), wxT(""), wxITEM_NORMAL);
-	WxPopupMenu1->Append(ID_MNU_LOADPLAYLIST_1025, wxT("Load Playlist"), wxT(""), wxITEM_NORMAL);
 
 	SetTitle(wxT("DSMP"));
 	SetIcon(Self_SMPDlg_XPM);
@@ -266,6 +278,7 @@ void SMPDlg::CreateGUIControls()
 
 	wxBitmap NextButton_click_BITMAP (Next_Click_xpm);
 	NextButton->SetBitmapSelected(NextButton_click_BITMAP);
+	
 	
 }
 
@@ -465,7 +478,7 @@ void SMPDlg::PlayButtonClick(wxCommandEvent& event)
         //Play now
         if(WxMediaCtrl1->GetState() == wxMEDIASTATE_PAUSED)
         {
-            WxMediaCtrl1->Play();
+            if(WxMediaCtrl1->Play());
             //SMPError("Now Playing");
         }
         else
@@ -510,6 +523,12 @@ void SMPDlg::WxMediaCtrl1MediaLoaded(wxMediaEvent& event)
 void SMPDlg::WxMediaCtrl1MediaFinished(wxMediaEvent& event)
 {
 	// insert your code here
+	wxListItem temp;
+	temp.Clear();
+	temp.SetId(selItem);
+	temp.SetMask(wxLIST_MASK_STATE);
+	temp.SetState(~wxLIST_STATE_SELECTED);
+	WxListCtrl1->SetItemState(selItem,~wxLIST_STATE_SELECTED,wxLIST_STATE_SELECTED);	
     PlayNextFile();
 }
 
@@ -623,7 +642,11 @@ void SMPDlg::PlayThisFile(long id)
 	{
     	wxString path = temp.GetText();
     	//SMPError(path);
-    	WxMediaCtrl1->Load(path);
+    	if( WxMediaCtrl1->Load(path) == false)
+    	{
+            PlayNextFile();
+            return;
+        }
     	lastPlayed.push_front(path);
     	temp.SetColumn(1);
     	temp.SetMask(wxLIST_MASK_TEXT);
@@ -690,6 +713,20 @@ void SMPDlg::WxListCtrl1KeyDown(wxListEvent& event)
             }
             break;
             
+        case 'A':
+            
+                if(wxGetKeyState(WXK_CONTROL))
+                {
+                    item = -1;
+                    while( (item = WxListCtrl1->GetNextItem(item)) != -1)
+                    {
+                        WxListCtrl1->SetItemState(item, wxLIST_STATE_SELECTED , wxLIST_STATE_SELECTED);                        
+                    }
+                }
+                    
+            
+            break;
+
     }
 }
 
@@ -755,24 +792,7 @@ void SMPDlg::PreviousButtonClick(wxCommandEvent& event)
         item = WxListCtrl1->GetNextItem(item,
                            wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
     }
-    if(nextPlay.size() > 0)
-    {
-        PlayFromQueue();
-    }
-    else if(RandomCheckbox->IsChecked()) 
-        PlayNextFile();
-    else
-    {
-        int itemCount = WxListCtrl1->GetItemCount();
-        if(itemCount < 1)
-           return;
-        //SMPError(wxString::Format("%d",itemCount));
-            if(selItem <=0)
-                selItem = itemCount - 1;
-            else
-                selItem = ( selItem - 1) % itemCount;
-        PlayThisFile(selItem);        
-    }
+    PlayFileNow();
 
 }
 
@@ -1117,4 +1137,199 @@ void SMPDlg::PlaylistsButtonClick(wxCommandEvent& event)
 	PlaylistsButton->GetSize(&width, &height);
 	PopupMenu(PlaylistMenu,x, y + height - 1);
 
+}
+
+// No description
+void SMPDlg::HotKeyPlay(wxKeyEvent &event)
+{
+	// insert your code here
+	if(isPlaying)
+	{
+        //Pause now 
+        WxMediaCtrl1->Pause();
+        //SMPError("CalledPause");
+        isPlaying = false;
+    	wxBitmap PlayButton_normal_BITMAP (SMPDlg_PlayButton_XPM);
+    	PlayButton->SetBitmapLabel(PlayButton_normal_BITMAP);
+
+
+    	wxBitmap PlayButton_hover_BITMAP (Play_Hover_xpm);
+    	PlayButton->SetBitmapHover(PlayButton_hover_BITMAP);
+
+    	wxBitmap PlayButton_click_BITMAP (Play_Clickl_xpm);
+    	PlayButton->SetBitmapSelected(PlayButton_click_BITMAP);
+    }
+    else
+    {
+        //Play now
+        if(WxMediaCtrl1->GetState() == wxMEDIASTATE_PAUSED)
+        {
+            WxMediaCtrl1->Play();
+            //SMPError("Now Playing");
+        }
+        else
+        {
+            PlayNextFile();
+            //SMPError("Now Playing Next File");
+        }
+        isPlaying = true;
+
+        wxBitmap PauseButton_normal_BITMAP (Pause_Normal_xpm);
+        PlayButton->SetBitmapLabel(PauseButton_normal_BITMAP);
+        
+        
+        wxBitmap PauseButton_hover_BITMAP (Pause_Hover_xpm);
+        PlayButton->SetBitmapHover(PauseButton_hover_BITMAP);
+        
+        wxBitmap PauseButton_click_BITMAP (Pause_Click_xpm);
+        PlayButton->SetBitmapSelected(PauseButton_click_BITMAP);       
+    }
+}
+/*
+ * HotNextButton
+ */
+void SMPDlg::HotKeyNext(wxKeyEvent& event)
+{
+	// insert your code here
+	WxMediaCtrl1->Stop();
+	wxListItem temp;
+	temp.Clear();
+	temp.SetId(selItem);
+	temp.SetMask(wxLIST_MASK_STATE);
+	temp.SetState(~wxLIST_STATE_SELECTED);
+	WxListCtrl1->SetItemState(selItem,~wxLIST_STATE_SELECTED,wxLIST_STATE_SELECTED);
+    PlayNextFile();
+	
+}
+
+/*
+ * HotKeyStop
+ */
+void SMPDlg::HotKeyStop(wxKeyEvent& event)
+{
+	// insert your code here
+	WxMediaCtrl1->Stop();
+	wxListItem temp;
+	temp.Clear();
+	temp.SetId(selItem);
+	temp.SetMask(wxLIST_MASK_STATE);
+	temp.SetState(~wxLIST_STATE_SELECTED);
+	WxListCtrl1->SetItemState(selItem,~wxLIST_STATE_SELECTED,wxLIST_STATE_SELECTED);	
+	wxBitmap PlayButton_normal_BITMAP (SMPDlg_PlayButton_XPM);
+	PlayButton->SetBitmapLabel(PlayButton_normal_BITMAP);
+
+
+	wxBitmap PlayButton_hover_BITMAP (Play_Hover_xpm);
+	PlayButton->SetBitmapHover(PlayButton_hover_BITMAP);
+
+	wxBitmap PlayButton_click_BITMAP (Play_Clickl_xpm);
+	PlayButton->SetBitmapSelected(PlayButton_click_BITMAP);	
+	
+}
+
+/*
+ * HotKeyPrev
+ */
+void SMPDlg::HotKeyPrev(wxKeyEvent& event)
+{
+	// insert your code here
+    //SMPError("0");
+	if(lastPlayed.size() >= 1)
+	{
+        //SMPError("1");
+        if(isPlaying)
+            lastPlayed.pop_front();
+    	if(lastPlayed.size() >= 1)
+    	{
+            //SMPError("1");
+            wxString path = lastPlayed.front();
+            lastPlayed.pop_front();
+            long item = WxListCtrl1->GetNextItem(-1, wxLIST_NEXT_ALL);
+            while ( item != -1 )
+            {
+                //SMPError("2");
+                wxListItem temp;
+                temp.SetId(item);
+            	temp.SetColumn(2);
+            	temp.SetMask(wxLIST_MASK_TEXT);
+            	WxListCtrl1->GetItem( temp);
+            	if( temp.GetText() == path)
+            	{
+                	WxMediaCtrl1->Stop();
+                	wxListItem temp;
+                	temp.Clear();
+                	temp.SetId(selItem);
+                	temp.SetMask(wxLIST_MASK_STATE);
+                	temp.SetState(~wxLIST_STATE_SELECTED);
+                	WxListCtrl1->SetItemState(selItem,~wxLIST_STATE_SELECTED,wxLIST_STATE_SELECTED);
+                    
+                    PlayThisFile(item);
+                    //SMPError("4");
+                    return;
+                }
+                        
+    
+                //wxLogMessage(_T("Item %ld deleted"), item);
+    
+              
+                item = WxListCtrl1->GetNextItem(item, wxLIST_NEXT_ALL);
+            }
+            
+        }
+    }
+    lastPlayed.clear();
+    long item = WxListCtrl1->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+    while ( item != -1 )
+    {
+       	WxListCtrl1->SetItemState(item,~wxLIST_STATE_SELECTED,wxLIST_STATE_SELECTED);
+        
+        //wxLogMessage(_T("Item %ld deleted"), item);
+        //SMPError(wxString::Format("Unselected item ID %d",item));
+
+        item = WxListCtrl1->GetNextItem(item,
+                           wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+    }
+    if(nextPlay.size() > 0)
+    {
+        PlayFromQueue();
+    }
+    else if(RandomCheckbox->IsChecked()) 
+        PlayNextFile();
+    else
+    {
+        int itemCount = WxListCtrl1->GetItemCount();
+        if(itemCount < 1)
+           return;
+        //SMPError(wxString::Format("%d",itemCount));
+            if(selItem <=0)
+                selItem = itemCount - 1;
+            else
+                selItem = ( selItem - 1) % itemCount;
+        PlayThisFile(selItem);        
+    }
+
+}
+
+// No description
+void SMPDlg::PlayFileNow()
+{
+    if(nextPlay.size() > 0)
+    {
+        PlayFromQueue();
+    }
+    else if(RandomCheckbox->IsChecked()) 
+        PlayNextFile();
+    else
+    {
+        int itemCount = WxListCtrl1->GetItemCount();
+        if(itemCount < 1)
+           return;
+        //SMPError(wxString::Format("%d",itemCount));
+            if(selItem <=0)
+                selItem = itemCount - 1;
+            else
+                selItem = ( selItem - 1) % itemCount;
+        PlayThisFile(selItem);        
+    }
+	
 }

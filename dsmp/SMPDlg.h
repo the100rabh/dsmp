@@ -71,6 +71,9 @@ class SMPDlg : public wxDialog
 		void WxListCtrl1ItemActivated(wxListEvent& event);
 		void WxListCtrl1KeyDown(wxListEvent& event);
 		void PreviousButtonClick(wxCommandEvent& event);
+	public:
+		// No description
+		void PlayFileNow();
 		void StopButtonClick(wxCommandEvent& event);
 		void RandomCheckboxClick(wxCommandEvent& event);
 		void WxButton2Click(wxCommandEvent& event);
@@ -83,16 +86,22 @@ class SMPDlg : public wxDialog
 		void WxListCtrl1ColRightClick(wxListEvent& event);
 		void AddButtonClick(wxCommandEvent& event);
 		void PlaylistsButtonClick(wxCommandEvent& event);
+		// No description
+		void HotKeyNext(wxKeyEvent &event);
+		void HotKeyStop(wxKeyEvent &event);
+		void HotKeyPlay(wxKeyEvent &event);
+		void HotKeyPrev(wxKeyEvent &event);
+		
 	
 	private:
 		//Do not add custom control declarations between 
 		//GUI Control Declaration Start and GUI Control Declaration End.
 		//wxDev-C++ will remove them. Add custom code after the block.
 		////GUI Control Declaration Start
-		wxMenu *WxPopupMenu1;
 		wxTimer *WxTimer1;
 		wxMenu *AddMenu;
 		wxMenu *PlaylistMenu;
+		wxMenu *WxPopupMenu1;
 		wxListCtrl *WxListCtrl1;
 		wxCheckBox *RandomCheckbox;
 		wxMediaCtrl *WxMediaCtrl1;
@@ -118,6 +127,13 @@ class SMPDlg : public wxDialog
 		enum
 		{
 			////GUI Enum Control ID Start
+			ID_WXTIMER1 = 1017,
+			ID_MNU_ADDFILES_1026 = 1026,
+			ID_MNU_ADDFOLDER_1027 = 1027,
+			
+			ID_MNU_LOADPLAYLIST_1028 = 1028,
+			ID_MNU_SAVEPLAYLIST_1029 = 1029,
+			
 			ID_MNU_PLAY_PAUSE_1019 = 1019,
 			ID_MNU_STOP_1020 = 1020,
 			ID_MNU_NEXT_1021 = 1021,
@@ -125,13 +141,6 @@ class SMPDlg : public wxDialog
 			ID_MNU_ADDFOLDER_1023 = 1023,
 			ID_MNU_SAVEPLAYLIST_1024 = 1024,
 			ID_MNU_LOADPLAYLIST_1025 = 1025,
-			
-			ID_WXTIMER1 = 1017,
-			ID_MNU_ADDFILES_1026 = 1026,
-			ID_MNU_ADDFOLDER_1027 = 1027,
-			
-			ID_MNU_LOADPLAYLIST_1028 = 1028,
-			ID_MNU_SAVEPLAYLIST_1029 = 1029,
 			
 			ID_WXLISTCTRL1 = 1015,
 			ID_RANDOMCHECKBOX = 1018,
@@ -147,6 +156,10 @@ class SMPDlg : public wxDialog
 			ID_WXPANEL2 = 1002,
 			ID_WXPANEL1 = 1011,
 			////GUI Enum Control ID End
+			ID_HOT_PLAY,
+			ID_HOT_STOP,
+			ID_HOT_NEXT,
+			ID_HOT_PREV,
 			ID_DUMMY_VALUE_ //don't remove this value unless you have other enum values
 		};
 	
@@ -167,6 +180,7 @@ class SMPDlg : public wxDialog
 		std::list<wxString> lastPlayed, nextPlay;
 		// No description
 		void PlayNextFile();
+		
 };
 
 #endif
