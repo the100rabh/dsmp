@@ -29,8 +29,10 @@
 //Header Include Start and Header Include End.
 //wxDev-C++ designer will remove them. Add custom headers after the block.
 ////Header Include Start
-#include <wx/timer.h>
+#include <wx/textctrl.h>
+#include <wx/stattext.h>
 #include <wx/menu.h>
+#include <wx/timer.h>
 #include <wx/listctrl.h>
 #include <wx/checkbox.h>
 #include <wx/mediactrl.h>
@@ -91,18 +93,28 @@ class SMPDlg : public wxDialog
 		void HotKeyStop(wxKeyEvent &event);
 		void HotKeyPlay(wxKeyEvent &event);
 		void HotKeyPrev(wxKeyEvent &event);
-		
+		void WxListCtrl1ColLeftClick(wxListEvent& event);
+		void FindButtonClick(wxCommandEvent& event);		
+		void FindTextEditEnter(wxCommandEvent& event);
+		void FindNextButtonClick(wxCommandEvent& event);
+		void FindPrevButtonClick(wxCommandEvent& event);
 	
 	private:
 		//Do not add custom control declarations between 
 		//GUI Control Declaration Start and GUI Control Declaration End.
 		//wxDev-C++ will remove them. Add custom code after the block.
 		////GUI Control Declaration Start
-		wxTimer *WxTimer1;
-		wxMenu *AddMenu;
+		wxButton *FindPrevButton;
+		wxButton *FindNextButton;
+		wxTextCtrl *FindTextEdit;
+		wxStaticText *WxStaticText1;
 		wxMenu *PlaylistMenu;
+		wxMenu *AddMenu;
 		wxMenu *WxPopupMenu1;
+		wxTimer *WxTimer1;
 		wxListCtrl *WxListCtrl1;
+		wxPanel *SearchPanel;
+		wxButton *FindButton;
 		wxCheckBox *RandomCheckbox;
 		wxMediaCtrl *WxMediaCtrl1;
 		wxSlider *WxSlider2;
@@ -127,12 +139,15 @@ class SMPDlg : public wxDialog
 		enum
 		{
 			////GUI Enum Control ID Start
-			ID_WXTIMER1 = 1017,
-			ID_MNU_ADDFILES_1026 = 1026,
-			ID_MNU_ADDFOLDER_1027 = 1027,
-			
+			ID_FINDPREVBUTTON = 1036,
+			ID_FINDNEXTBUTTON = 1034,
+			ID_FINDTEXTEDIT = 1033,
+			ID_WXSTATICTEXT1 = 1032,
 			ID_MNU_LOADPLAYLIST_1028 = 1028,
 			ID_MNU_SAVEPLAYLIST_1029 = 1029,
+			
+			ID_MNU_ADDFILES_1026 = 1026,
+			ID_MNU_ADDFOLDER_1027 = 1027,
 			
 			ID_MNU_PLAY_PAUSE_1019 = 1019,
 			ID_MNU_STOP_1020 = 1020,
@@ -142,7 +157,10 @@ class SMPDlg : public wxDialog
 			ID_MNU_SAVEPLAYLIST_1024 = 1024,
 			ID_MNU_LOADPLAYLIST_1025 = 1025,
 			
+			ID_WXTIMER1 = 1017,
 			ID_WXLISTCTRL1 = 1015,
+			ID_SEARCHPANEL = 1031,
+			ID_FINDBUTTON = 1030,
 			ID_RANDOMCHECKBOX = 1018,
 			ID_WXMEDIACTRL1 = 1016,
 			ID_WXSLIDER2 = 1014,

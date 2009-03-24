@@ -14,7 +14,6 @@
 #include <iostream>
 #include <fstream>
 
-
 //Do not add custom headers
 //wxDev-C++ designer will remove them
 ////Header Include Start
@@ -40,6 +39,26 @@
 #include "Images/Pause_Hover.xpm"
 #include "Images/Pause_Normal.xpm"
 
+#include "Images/click_play.xpm"
+#include "Images/click_skip_backward.xpm"
+#include "Images/click_skip_forward.xpm"
+
+#include "Images/click_stop_playing.xpm"
+#include "Images/hover_play.xpm"
+#include "Images/hover_skip_backward.xpm"
+
+#include "Images/hover_skip_forward.xpm"
+#include "Images/hover_stop_playing.xpm"
+#include "Images/play.xpm"
+
+#include "Images/skip_backward.xpm"
+#include "Images/skip_forward.xpm"
+#include "Images/stop_playing.xpm"
+
+#include "Images/pause.xpm"
+#include "Images/click_pause.xpm"
+#include "Images/hover_pause.xpm"
+
 
 //----------------------------------------------------------------------------
 // SMPDlg
@@ -57,11 +76,13 @@ BEGIN_EVENT_TABLE(SMPDlg,wxDialog)
 	
 	EVT_CLOSE(SMPDlg::OnClose)
 	EVT_DROP_FILES(SMPDlg::SMPDlgDropFiles)
-	EVT_TIMER(ID_WXTIMER1,SMPDlg::WxTimer1Timer)
-	EVT_MENU(ID_MNU_ADDFILES_1026 , SMPDlg::WxButton2Click)
-	EVT_MENU(ID_MNU_ADDFOLDER_1027 , SMPDlg::WxButton1Click)
+	EVT_BUTTON(ID_FINDPREVBUTTON,SMPDlg::FindPrevButtonClick)
+	EVT_BUTTON(ID_FINDNEXTBUTTON,SMPDlg::FindNextButtonClick)
+	EVT_TEXT_ENTER(ID_FINDTEXTEDIT,SMPDlg::FindTextEditEnter)
 	EVT_MENU(ID_MNU_LOADPLAYLIST_1028 , SMPDlg::LoadPlaylistClick)
 	EVT_MENU(ID_MNU_SAVEPLAYLIST_1029 , SMPDlg::SavePlaylistClick)
+	EVT_MENU(ID_MNU_ADDFILES_1026 , SMPDlg::WxButton2Click)
+	EVT_MENU(ID_MNU_ADDFOLDER_1027 , SMPDlg::WxButton1Click)
 	EVT_MENU(ID_MNU_PLAY_PAUSE_1019 , SMPDlg::PlayButtonClick)
 	EVT_MENU(ID_MNU_STOP_1020 , SMPDlg::StopButtonClick)
 	EVT_MENU(ID_MNU_NEXT_1021 , SMPDlg::NextButtonClick)
@@ -70,9 +91,11 @@ BEGIN_EVENT_TABLE(SMPDlg,wxDialog)
 	EVT_MENU(ID_MNU_SAVEPLAYLIST_1024 , SMPDlg::SavePlaylistClick)
 	EVT_UPDATE_UI(ID_MNU_SAVEPLAYLIST_1024 , SMPDlg::SavePlaylistUpdateUI0)
 	EVT_MENU(ID_MNU_LOADPLAYLIST_1025 , SMPDlg::LoadPlaylistClick)
+	EVT_TIMER(ID_WXTIMER1,SMPDlg::WxTimer1Timer)
 	
 	EVT_LIST_ITEM_ACTIVATED(ID_WXLISTCTRL1,SMPDlg::WxListCtrl1ItemActivated)
 	EVT_LIST_KEY_DOWN(ID_WXLISTCTRL1,SMPDlg::WxListCtrl1KeyDown)
+	EVT_BUTTON(ID_FINDBUTTON,SMPDlg::FindButtonClick)
 	
 	EVT_MEDIA_STOP(ID_WXMEDIACTRL1,SMPDlg::WxMediaCtrl1MediaStop)
 	EVT_MEDIA_LOADED(ID_WXMEDIACTRL1,SMPDlg::WxMediaCtrl1MediaLoaded)
@@ -105,16 +128,16 @@ SMPDlg::SMPDlg(wxWindow *parent, wxWindowID id, const wxString &title, const wxP
 	selItem = -1;
     lastPlayed.clear();
     nextPlay.clear();
-    wxAcceleratorEntry entries[4];
-    entries[0].Set(wxACCEL_NORMAL,  (int) 'Z',     ID_PREVIOUSBUTTON);
-    entries[1].Set(wxACCEL_NORMAL,  (int) 'X',     ID_PLAYBUTTON);
-    entries[2].Set(wxACCEL_NORMAL, (int) 'C',     ID_STOPBUTTON);
-    entries[3].Set(wxACCEL_NORMAL,  (int) 'V',   ID_NEXTBUTTON );
-    wxAcceleratorTable accel(4, entries);
-    if(accel.IsOk())
-    {
-        this->SetAcceleratorTable(accel);
-    }
+//    wxAcceleratorEntry entries[4];
+//    entries[0].Set(wxACCEL_NORMAL,  (int) 'Z',     ID_PREVIOUSBUTTON);
+//    entries[1].Set(wxACCEL_NORMAL,  (int) 'X',     ID_PLAYBUTTON);
+//    entries[2].Set(wxACCEL_NORMAL, (int) 'C',     ID_STOPBUTTON);
+//    entries[3].Set(wxACCEL_NORMAL,  (int) 'V',   ID_NEXTBUTTON );
+//    wxAcceleratorTable accel(4, entries);
+//    if(accel.IsOk())
+//    {
+//        this->SetAcceleratorTable(accel);
+//    }
     this->Connect(wxID_ANY,wxEVT_RIGHT_UP,wxMouseEventHandler(SMPDlg::SMPDlgRightUP));
     
     wxString path, filePath;
@@ -218,12 +241,21 @@ void SMPDlg::CreateGUIControls()
 
 	RandomCheckbox = new wxCheckBox(WxPanel, ID_RANDOMCHECKBOX, wxT("Random"), wxPoint(498, 11), wxSize(61, 16), 0, wxDefaultValidator, wxT("RandomCheckbox"));
 
-	WxListCtrl1 = new wxListCtrl(WxPanel1, ID_WXLISTCTRL1, wxPoint(61, 47), wxSize(627, 165), wxLC_REPORT | wxLC_AUTOARRANGE | wxLC_EDIT_LABELS, wxDefaultValidator, wxT("WxListCtrl1"));
+	FindButton = new wxButton(WxPanel, ID_FINDBUTTON, wxT("Find"), wxPoint(409, 6), wxSize(53, 25), 0, wxDefaultValidator, wxT("FindButton"));
+
+	SearchPanel = new wxPanel(WxPanel1, ID_SEARCHPANEL, wxPoint(18, 47), wxSize(712, 34));
+	SearchPanel->Show(false);
+	WxFlexGridSizer1->Add(SearchPanel,0,wxALIGN_LEFT | wxALL,5);
+
+	WxListCtrl1 = new wxListCtrl(WxPanel1, ID_WXLISTCTRL1, wxPoint(61, 91), wxSize(627, 165), wxLC_REPORT | wxLC_AUTOARRANGE | wxLC_EDIT_LABELS, wxDefaultValidator, wxT("WxListCtrl1"));
 	WxListCtrl1->InsertColumn(0,wxT("Queue"),wxLIST_FORMAT_LEFT,47 );
 	WxListCtrl1->InsertColumn(0,wxT("Path"),wxLIST_FORMAT_LEFT,100 );
 	WxListCtrl1->InsertColumn(0,wxT("Name"),wxLIST_FORMAT_LEFT,100 );
 	WxListCtrl1->InsertColumn(0,wxT("Directory"),wxLIST_FORMAT_LEFT,100 );
 	WxFlexGridSizer1->Add(WxListCtrl1,1,wxALIGN_LEFT | wxEXPAND | wxALL,5);
+
+	WxTimer1 = new wxTimer();
+	WxTimer1->SetOwner(this, ID_WXTIMER1);
 
 	WxPopupMenu1 = new wxMenu(wxT(""));WxPopupMenu1->Append(ID_MNU_PLAY_PAUSE_1019, wxT("Play/Pause"), wxT(""), wxITEM_NORMAL);
 	WxPopupMenu1->Append(ID_MNU_STOP_1020, wxT("Stop"), wxT(""), wxITEM_NORMAL);
@@ -233,14 +265,19 @@ void SMPDlg::CreateGUIControls()
 	WxPopupMenu1->Append(ID_MNU_SAVEPLAYLIST_1024, wxT("Save Playlist"), wxT(""), wxITEM_NORMAL);
 	WxPopupMenu1->Append(ID_MNU_LOADPLAYLIST_1025, wxT("Load Playlist"), wxT(""), wxITEM_NORMAL);
 
-	PlaylistMenu = new wxMenu(wxT(""));PlaylistMenu->Append(ID_MNU_LOADPLAYLIST_1028, wxT("Load Playlist"), wxT(""), wxITEM_NORMAL);
-	PlaylistMenu->Append(ID_MNU_SAVEPLAYLIST_1029, wxT("Save Playlist"), wxT(""), wxITEM_NORMAL);
-
 	AddMenu = new wxMenu(wxT(""));AddMenu->Append(ID_MNU_ADDFILES_1026, wxT("Add Files"), wxT(""), wxITEM_NORMAL);
 	AddMenu->Append(ID_MNU_ADDFOLDER_1027, wxT("Add Folder"), wxT(""), wxITEM_NORMAL);
 
-	WxTimer1 = new wxTimer();
-	WxTimer1->SetOwner(this, ID_WXTIMER1);
+	PlaylistMenu = new wxMenu(wxT(""));PlaylistMenu->Append(ID_MNU_LOADPLAYLIST_1028, wxT("Load Playlist"), wxT(""), wxITEM_NORMAL);
+	PlaylistMenu->Append(ID_MNU_SAVEPLAYLIST_1029, wxT("Save Playlist"), wxT(""), wxITEM_NORMAL);
+
+	WxStaticText1 = new wxStaticText(SearchPanel, ID_WXSTATICTEXT1, wxT("Search for File : "), wxPoint(16, 7), wxDefaultSize, 0, wxT("WxStaticText1"));
+
+	FindTextEdit = new wxTextCtrl(SearchPanel, ID_FINDTEXTEDIT, wxT(""), wxPoint(104, 4), wxSize(236, 22), wxTE_PROCESS_ENTER, wxDefaultValidator, wxT("FindTextEdit"));
+
+	FindNextButton = new wxButton(SearchPanel, ID_FINDNEXTBUTTON, wxT("Next"), wxPoint(359, 4), wxSize(47, 23), 0, wxDefaultValidator, wxT("FindNextButton"));
+
+	FindPrevButton = new wxButton(SearchPanel, ID_FINDPREVBUTTON, wxT("Prev"), wxPoint(415, 5), wxSize(47, 21), 0, wxDefaultValidator, wxT("FindPrevButton"));
 
 	SetTitle(wxT("DSMP"));
 	SetIcon(Self_SMPDlg_XPM);
@@ -251,32 +288,32 @@ void SMPDlg::CreateGUIControls()
 	Center();
 	
 	////GUI Items Creation End
-	WxFlexGridSizer1->AddGrowableRow(1,1);
+	WxFlexGridSizer1->AddGrowableRow(2,1);
 	WxFlexGridSizer1->AddGrowableCol(0,1);
 
-	wxBitmap PreviousButton_hover_BITMAP (Previous_Hoverl_xpm);
+	wxBitmap PreviousButton_hover_BITMAP (hover_skip_backward_xpm);
 	PreviousButton->SetBitmapHover(PreviousButton_hover_BITMAP);
 
-	wxBitmap PreviousButton_click_BITMAP (Previous_click_xpm);
+	wxBitmap PreviousButton_click_BITMAP (click_skip_backward_xpm);
 	PreviousButton->SetBitmapSelected(PreviousButton_click_BITMAP);
 
-	wxBitmap PlayButton_hover_BITMAP (Play_Hover_xpm);
+	wxBitmap PlayButton_hover_BITMAP (hover_play_xpm);
 	PlayButton->SetBitmapHover(PlayButton_hover_BITMAP);
 
-	wxBitmap PlayButton_click_BITMAP (Play_Clickl_xpm);
+	wxBitmap PlayButton_click_BITMAP (click_play_xpm);
 	PlayButton->SetBitmapSelected(PlayButton_click_BITMAP);
 
-	wxBitmap StopButton_click_BITMAP (Stop_Click_xpm);
+	wxBitmap StopButton_click_BITMAP (click_stop_playing_xpm);
 	StopButton->SetBitmapSelected(StopButton_click_BITMAP);
 
-	wxBitmap StopButton_hover_BITMAP (Stop_Hover_xpm);
+	wxBitmap StopButton_hover_BITMAP (hover_stop_playing_xpm);
 	StopButton->SetBitmapHover(StopButton_hover_BITMAP);
 
 
-	wxBitmap NextButton_hover_BITMAP (Next_Hover_xpm);
+	wxBitmap NextButton_hover_BITMAP (hover_skip_forward_xpm);
 	NextButton->SetBitmapHover(NextButton_hover_BITMAP);
 
-	wxBitmap NextButton_click_BITMAP (Next_Click_xpm);
+	wxBitmap NextButton_click_BITMAP (click_skip_forward_xpm);
 	NextButton->SetBitmapSelected(NextButton_click_BITMAP);
 	
 	
@@ -467,10 +504,10 @@ void SMPDlg::PlayButtonClick(wxCommandEvent& event)
     	PlayButton->SetBitmapLabel(PlayButton_normal_BITMAP);
 
 
-    	wxBitmap PlayButton_hover_BITMAP (Play_Hover_xpm);
+    	wxBitmap PlayButton_hover_BITMAP (hover_play_xpm);
     	PlayButton->SetBitmapHover(PlayButton_hover_BITMAP);
 
-    	wxBitmap PlayButton_click_BITMAP (Play_Clickl_xpm);
+    	wxBitmap PlayButton_click_BITMAP (click_play_xpm);
     	PlayButton->SetBitmapSelected(PlayButton_click_BITMAP);
     }
     else
@@ -488,14 +525,14 @@ void SMPDlg::PlayButtonClick(wxCommandEvent& event)
         }
         isPlaying = true;
 
-        wxBitmap PauseButton_normal_BITMAP (Pause_Normal_xpm);
+        wxBitmap PauseButton_normal_BITMAP (pause_xpm);
         PlayButton->SetBitmapLabel(PauseButton_normal_BITMAP);
         
         
-        wxBitmap PauseButton_hover_BITMAP (Pause_Hover_xpm);
+        wxBitmap PauseButton_hover_BITMAP (hover_pause_xpm);
         PlayButton->SetBitmapHover(PauseButton_hover_BITMAP);
         
-        wxBitmap PauseButton_click_BITMAP (Pause_Click_xpm);
+        wxBitmap PauseButton_click_BITMAP (click_pause_xpm);
         PlayButton->SetBitmapSelected(PauseButton_click_BITMAP);       
     }
 	
@@ -665,15 +702,15 @@ void SMPDlg::PlayThisFile(long id)
         SMPError("Cannot get item");
     }
     isPlaying = true;
-	wxBitmap PauseButton_normal_BITMAP (Pause_Normal_xpm);
-	PlayButton->SetBitmapLabel(PauseButton_normal_BITMAP);
-
-
-	wxBitmap PauseButton_hover_BITMAP (Pause_Hover_xpm);
-	PlayButton->SetBitmapHover(PauseButton_hover_BITMAP);
-
-	wxBitmap PauseButton_click_BITMAP (Pause_Click_xpm);
-	PlayButton->SetBitmapSelected(PauseButton_click_BITMAP);    	
+    wxBitmap PauseButton_normal_BITMAP (pause_xpm);
+    PlayButton->SetBitmapLabel(PauseButton_normal_BITMAP);
+    
+    
+    wxBitmap PauseButton_hover_BITMAP (hover_pause_xpm);
+    PlayButton->SetBitmapHover(PauseButton_hover_BITMAP);
+    
+    wxBitmap PauseButton_click_BITMAP (click_pause_xpm);
+    PlayButton->SetBitmapSelected(PauseButton_click_BITMAP);    	
 }
 
 /*
@@ -813,11 +850,11 @@ void SMPDlg::StopButtonClick(wxCommandEvent& event)
 	PlayButton->SetBitmapLabel(PlayButton_normal_BITMAP);
 
 
-	wxBitmap PlayButton_hover_BITMAP (Play_Hover_xpm);
+	wxBitmap PlayButton_hover_BITMAP (hover_play_xpm);
 	PlayButton->SetBitmapHover(PlayButton_hover_BITMAP);
 
-	wxBitmap PlayButton_click_BITMAP (Play_Clickl_xpm);
-	PlayButton->SetBitmapSelected(PlayButton_click_BITMAP);	
+	wxBitmap PlayButton_click_BITMAP (click_play_xpm);
+	PlayButton->SetBitmapSelected(PlayButton_click_BITMAP);
 	
 }
 
@@ -1013,7 +1050,8 @@ void SMPDlg::WxListCtrl1RightClick(wxListEvent& event)
 {
 	// insert your code here
 	SMPError("right click");
-	PopupMenu(WxPopupMenu1,0,0);
+	//wxPoint point = wxGetMousePosition();
+	PopupMenu(WxPopupMenu1);
 }
 
 /*
@@ -1153,10 +1191,10 @@ void SMPDlg::HotKeyPlay(wxKeyEvent &event)
     	PlayButton->SetBitmapLabel(PlayButton_normal_BITMAP);
 
 
-    	wxBitmap PlayButton_hover_BITMAP (Play_Hover_xpm);
+    	wxBitmap PlayButton_hover_BITMAP (hover_play_xpm);
     	PlayButton->SetBitmapHover(PlayButton_hover_BITMAP);
 
-    	wxBitmap PlayButton_click_BITMAP (Play_Clickl_xpm);
+    	wxBitmap PlayButton_click_BITMAP (click_play_xpm);
     	PlayButton->SetBitmapSelected(PlayButton_click_BITMAP);
     }
     else
@@ -1174,14 +1212,14 @@ void SMPDlg::HotKeyPlay(wxKeyEvent &event)
         }
         isPlaying = true;
 
-        wxBitmap PauseButton_normal_BITMAP (Pause_Normal_xpm);
+        wxBitmap PauseButton_normal_BITMAP (pause_xpm);
         PlayButton->SetBitmapLabel(PauseButton_normal_BITMAP);
         
         
-        wxBitmap PauseButton_hover_BITMAP (Pause_Hover_xpm);
+        wxBitmap PauseButton_hover_BITMAP (hover_pause_xpm);
         PlayButton->SetBitmapHover(PauseButton_hover_BITMAP);
         
-        wxBitmap PauseButton_click_BITMAP (Pause_Click_xpm);
+        wxBitmap PauseButton_click_BITMAP (click_pause_xpm);
         PlayButton->SetBitmapSelected(PauseButton_click_BITMAP);       
     }
 }
@@ -1332,4 +1370,201 @@ void SMPDlg::PlayFileNow()
         PlayThisFile(selItem);        
     }
 	
+}
+
+/*
+ * WxListCtrl1ColLeftClick
+ */
+void SMPDlg::WxListCtrl1ColLeftClick(wxListEvent& event)
+{
+	// insert your code here
+    
+	return;
+}
+
+int wxCALLBACK MyCompareFunction(long item1, long item2, long WXUNUSED(sortData))
+{
+    
+    // inverse the order
+    if (item1 < item2)
+        return -1;
+    if (item1 > item2)
+        return 1;
+
+    return 0;
+}
+
+
+
+/*
+ * FindButtonClick
+ */
+void SMPDlg::FindButtonClick(wxCommandEvent& event)
+{
+	// insert your code here
+	if(SearchPanel->IsShown())
+	{
+        SearchPanel->Hide();
+    }
+    else
+    {
+        SearchPanel->Show(true);
+    }
+    WxFlexGridSizer1->Layout();
+//	FindDlg findDlg(this);
+//	findDlg.fileList = new struct FileNames[WxListCtrl1->GetItemCount()];
+//	long itemID = WxListCtrl1->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE	);
+//	int counter = 0;
+//    while ( itemID != -1 )
+//    {
+//        wxListItem item;
+//        item.SetId(itemID);
+//        item.SetColumn(0);
+//        WxListCtrl1->GetItem(item);
+//        findDlg.fileList[counter].dir = new wxString(item.GetText());   
+//        item.Clear();          
+//        item.SetId(itemID);
+//        item.SetColumn(1);
+//        WxListCtrl1->GetItem(item);
+//        findDlg.fileList[counter].name = new wxString(item.GetText());   
+//        item.Clear(); 
+//        item.SetId(itemID);
+//        item.SetColumn(2);
+//        WxListCtrl1->GetItem(item);
+//        findDlg.fileList[counter].path = new wxString(item.GetText());   
+//        item.Clear(); 
+//        itemID = WxListCtrl1->GetNextItem(itemID,
+//                           wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE	);
+//    }
+//    findDlg.ShowModal();
+
+}
+
+
+
+/*
+ * FindTextEditEnter
+ */
+void SMPDlg::FindTextEditEnter(wxCommandEvent& event)
+{
+	// insert your code here
+	wxString searchText = FindTextEdit->GetValue();
+	searchText.MakeLower();
+	long itemID = WxListCtrl1->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE	);
+    while ( itemID != -1 )
+    {
+        wxListItem item;
+        item.SetId(itemID);
+        item.SetColumn(0);
+        item.SetMask(wxLIST_MASK_TEXT);        
+        WxListCtrl1->GetItem(item);
+        wxString dir = item.GetText();
+        dir.MakeLower();   
+        item.Clear();          
+        item.SetMask(wxLIST_MASK_TEXT);
+        item.SetId(itemID);
+        item.SetColumn(1);
+        WxListCtrl1->GetItem(item);
+        wxString name = (item.GetText());   
+        name.MakeLower();
+        item.Clear(); 
+        if( (name.Find(searchText) == wxNOT_FOUND) && (dir.Find(searchText) == wxNOT_FOUND))
+        {
+            itemID = WxListCtrl1->GetNextItem(itemID,
+                           wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE	);
+        }
+        else
+        {
+        	WxListCtrl1->SetItemState(itemID,wxLIST_STATE_SELECTED,wxLIST_STATE_SELECTED);            
+            WxListCtrl1->EnsureVisible(itemID);
+            break;
+        }
+    }
+	
+}
+
+
+/*
+ * FindNextButtonClick
+ */
+void SMPDlg::FindNextButtonClick(wxCommandEvent& event)
+{
+	wxString searchText = FindTextEdit->GetValue();
+	searchText.MakeLower();
+    long itemID = WxListCtrl1->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED	);
+	long selectedItemID = itemID;
+	itemID = WxListCtrl1->GetNextItem(itemID, wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE	);
+    while ( itemID != -1 )
+    {
+        wxListItem item;
+        item.SetId(itemID);
+        item.SetColumn(0);
+        item.SetMask(wxLIST_MASK_TEXT);        
+        WxListCtrl1->GetItem(item);
+        wxString dir = item.GetText();
+        dir.MakeLower();   
+        item.Clear();          
+        item.SetMask(wxLIST_MASK_TEXT);
+        item.SetId(itemID);
+        item.SetColumn(1);
+        WxListCtrl1->GetItem(item);
+        wxString name = (item.GetText());   
+        name.MakeLower();
+        item.Clear(); 
+        if( (name.Find(searchText) == wxNOT_FOUND) && (dir.Find(searchText) == wxNOT_FOUND))
+        {
+            itemID = WxListCtrl1->GetNextItem(itemID,
+                           wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE	);
+        }
+        else
+        {
+        	WxListCtrl1->SetItemState(selectedItemID,~wxLIST_STATE_SELECTED,wxLIST_STATE_SELECTED);            
+        	WxListCtrl1->SetItemState(itemID,wxLIST_STATE_SELECTED,wxLIST_STATE_SELECTED);            
+            WxListCtrl1->EnsureVisible(itemID);
+            break;
+        }
+    }
+}
+
+/*
+ * FindPrevButtonClick
+ */
+void SMPDlg::FindPrevButtonClick(wxCommandEvent& event)
+{
+	wxString searchText = FindTextEdit->GetValue();
+	searchText.MakeLower();
+	long itemID = WxListCtrl1->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED	);
+	long selectedItemID = itemID;
+	itemID = WxListCtrl1->GetNextItem(itemID, wxLIST_NEXT_ABOVE, wxLIST_STATE_DONTCARE	);
+    while ( itemID != -1 )
+    {
+        wxListItem item;
+        item.SetId(itemID);
+        item.SetColumn(0);
+        item.SetMask(wxLIST_MASK_TEXT);        
+        WxListCtrl1->GetItem(item);
+        wxString dir = item.GetText();
+        dir.MakeLower();   
+        item.Clear();          
+        item.SetMask(wxLIST_MASK_TEXT);
+        item.SetId(itemID);
+        item.SetColumn(1);
+        WxListCtrl1->GetItem(item);
+        wxString name = (item.GetText());   
+        name.MakeLower();
+        item.Clear(); 
+        if( (name.Find(searchText) == wxNOT_FOUND) && (dir.Find(searchText) == wxNOT_FOUND))
+        {
+            itemID = WxListCtrl1->GetNextItem(itemID,
+                           wxLIST_NEXT_ABOVE, wxLIST_STATE_DONTCARE	);
+        }
+        else
+        {
+            
+        	WxListCtrl1->SetItemState(selectedItemID,~wxLIST_STATE_SELECTED,wxLIST_STATE_SELECTED);            
+        	WxListCtrl1->SetItemState(itemID,wxLIST_STATE_SELECTED,wxLIST_STATE_SELECTED);            
+            WxListCtrl1->EnsureVisible(itemID);
+            break;
+        }
+    }
 }

@@ -1,7 +1,7 @@
-# Project: SMP
+# Project: DSMP
 # Compiler: Default GCC compiler
 # Compiler Type: MingW 3
-# Makefile created by wxDev-C++ 7.0 on 24-03-09 00:00
+# Makefile created by wxDev-C++ 7.0 on 25-03-09 01:12
 
 CPP       = g++.exe
 CC        = gcc.exe
@@ -33,7 +33,7 @@ $(BIN): $(OBJ)
 Objects/MingW/SMPApp.o: $(GLOBALDEPS) SMPApp.cpp SMPApp.h SMPDlg.h filelist.h
 	$(CPP) -c SMPApp.cpp -o Objects/MingW/SMPApp.o $(CXXFLAGS)
 
-Objects/MingW/SMPDlg.o: $(GLOBALDEPS) SMPDlg.cpp SMPDlg.h filelist.h Images/Self_SMPDlg_XPM.xpm Images/SMPDlg_NextButton_XPM.xpm Images/SMPDlg_StopButton_XPM.xpm Images/SMPDlg_PlayButton_XPM.xpm Images/SMPDlg_PreviousButton_XPM.xpm Images/Previous_Hoverl.xpm Images/Previous_click.xpm Images/Play_Clickl.xpm Images/Play_Hover.xpm Images/Stop_Click.xpm Images/Stop_Hover.xpm Images/Next_Click.xpm Images/Next_Hover.xpm Images/Pause_Click.xpm Images/Pause_Hover.xpm Images/Pause_Normal.xpm
+Objects/MingW/SMPDlg.o: $(GLOBALDEPS) SMPDlg.cpp SMPDlg.h filelist.h Images/Self_SMPDlg_XPM.xpm Images/SMPDlg_NextButton_XPM.xpm Images/SMPDlg_StopButton_XPM.xpm Images/SMPDlg_PlayButton_XPM.xpm Images/SMPDlg_PreviousButton_XPM.xpm Images/Previous_Hoverl.xpm Images/Previous_click.xpm Images/Play_Clickl.xpm Images/Play_Hover.xpm Images/Stop_Click.xpm Images/Stop_Hover.xpm Images/Next_Click.xpm Images/Next_Hover.xpm Images/Pause_Click.xpm Images/Pause_Hover.xpm Images/Pause_Normal.xpm Images/click_play.xpm Images/click_skip_backward.xpm Images/click_skip_forward.xpm Images/click_stop_playing.xpm Images/hover_play.xpm Images/hover_skip_backward.xpm Images/hover_skip_forward.xpm Images/hover_stop_playing.xpm Images/play.xpm Images/skip_backward.xpm Images/skip_forward.xpm Images/stop_playing.xpm Images/pause.xpm Images/click_pause.xpm Images/hover_pause.xpm
 	$(CPP) -c SMPDlg.cpp -o Objects/MingW/SMPDlg.o $(CXXFLAGS)
 
 Objects/MingW/SMP_private.res: Objects/MingW/SMP_private.rc SMPApp.rc 
