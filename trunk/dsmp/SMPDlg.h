@@ -29,8 +29,8 @@
 //Header Include Start and Header Include End.
 //wxDev-C++ designer will remove them. Add custom headers after the block.
 ////Header Include Start
-#include <wx/timer.h>
 #include <wx/menu.h>
+#include <wx/timer.h>
 #include <wx/listctrl.h>
 #include <wx/textctrl.h>
 #include <wx/stattext.h>
@@ -104,10 +104,10 @@ class SMPDlg : public wxDialog
 		//GUI Control Declaration Start and GUI Control Declaration End.
 		//wxDev-C++ will remove them. Add custom code after the block.
 		////GUI Control Declaration Start
-		wxMenu *AddMenu;
-		wxTimer *WxTimer1;
 		wxMenu *PlaylistMenu;
 		wxMenu *WxPopupMenu1;
+		wxMenu *AddMenu;
+		wxTimer *WxTimer1;
 		wxListCtrl *WxListCtrl1;
 		wxButton *FindPrevButton;
 		wxButton *FindNextButton;
@@ -139,10 +139,6 @@ class SMPDlg : public wxDialog
 		enum
 		{
 			////GUI Enum Control ID Start
-			ID_MNU_ADDFILES_1026 = 1026,
-			ID_MNU_ADDFOLDER_1027 = 1027,
-			
-			ID_WXTIMER1 = 1017,
 			ID_MNU_LOADPLAYLIST_1028 = 1028,
 			ID_MNU_SAVEPLAYLIST_1029 = 1029,
 			
@@ -154,10 +150,14 @@ class SMPDlg : public wxDialog
 			ID_MNU_SAVEPLAYLIST_1024 = 1024,
 			ID_MNU_LOADPLAYLIST_1025 = 1025,
 			
+			ID_MNU_ADDFILES_1026 = 1026,
+			ID_MNU_ADDFOLDER_1027 = 1027,
+			
+			ID_WXTIMER1 = 1017,
 			ID_WXLISTCTRL1 = 1015,
 			ID_FINDPREVBUTTON = 1034,
 			ID_FINDNEXTBUTTON = 1033,
-			ID_FINDTEXTEDIT = 1023,
+			ID_FINDEDITTXT = 1044,
 			ID_WXSTATICTEXT1 = 1032,
 			ID_SEARCHPANEL = 1031,
 			ID_FINDBUTTON = 1030,
