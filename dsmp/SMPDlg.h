@@ -104,13 +104,13 @@ class SMPDlg : public wxDialog
 		//GUI Control Declaration Start and GUI Control Declaration End.
 		//wxDev-C++ will remove them. Add custom code after the block.
 		////GUI Control Declaration Start
+		wxMenu *AddMenu;
+		wxTimer *WxTimer1;
+		wxMenu *PlaylistMenu;
+		wxMenu *WxPopupMenu1;
+		wxListCtrl *WxListCtrl1;
 		wxButton *FindPrevButton;
 		wxButton *FindNextButton;
-		wxTimer *WxTimer1;
-		wxMenu *WxPopupMenu1;
-		wxMenu *AddMenu;
-		wxMenu *PlaylistMenu;
-		wxListCtrl *WxListCtrl1;
 		wxTextCtrl *FindTextEdit;
 		wxStaticText *WxStaticText1;
 		wxPanel *SearchPanel;
@@ -139,9 +139,13 @@ class SMPDlg : public wxDialog
 		enum
 		{
 			////GUI Enum Control ID Start
-			ID_FINDPREVBUTTON = 1034,
-			ID_FINDNEXTBUTTON = 1033,
+			ID_MNU_ADDFILES_1026 = 1026,
+			ID_MNU_ADDFOLDER_1027 = 1027,
+			
 			ID_WXTIMER1 = 1017,
+			ID_MNU_LOADPLAYLIST_1028 = 1028,
+			ID_MNU_SAVEPLAYLIST_1029 = 1029,
+			
 			ID_MNU_PLAY_PAUSE_1019 = 1019,
 			ID_MNU_STOP_1020 = 1020,
 			ID_MNU_NEXT_1021 = 1021,
@@ -150,13 +154,10 @@ class SMPDlg : public wxDialog
 			ID_MNU_SAVEPLAYLIST_1024 = 1024,
 			ID_MNU_LOADPLAYLIST_1025 = 1025,
 			
-			ID_MNU_ADDFILES_1026 = 1026,
-			ID_MNU_ADDFOLDER_1027 = 1027,
-			
-			ID_MNU_LOADPLAYLIST_1028 = 1028,
-			ID_MNU_SAVEPLAYLIST_1029 = 1029,
-			
 			ID_WXLISTCTRL1 = 1015,
+			ID_FINDPREVBUTTON = 1034,
+			ID_FINDNEXTBUTTON = 1033,
+			ID_FINDTEXTEDIT = 1023,
 			ID_WXSTATICTEXT1 = 1032,
 			ID_SEARCHPANEL = 1031,
 			ID_FINDBUTTON = 1030,
@@ -197,6 +198,7 @@ class SMPDlg : public wxDialog
 		std::list<wxString> lastPlayed, nextPlay;
 		// No description
 		void PlayNextFile();
+		void DeselectAllFiles();
 		
 };
 
