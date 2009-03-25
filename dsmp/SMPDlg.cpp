@@ -24,20 +24,20 @@
 #include "Images/SMPDlg_PreviousButton_XPM.xpm"
 ////Header Include End
 
-#include "Images/Previous_Hoverl.xpm"
-#include "Images/Previous_click.xpm"
-
-#include "Images/Play_Clickl.xpm"
-#include "Images/Play_Hover.xpm"
-
-#include "Images/Stop_Click.xpm"
-#include "Images/Stop_Hover.xpm"
-#include "Images/Next_Click.xpm"
-#include "Images/Next_Hover.xpm"
-
-#include "Images/Pause_Click.xpm"
-#include "Images/Pause_Hover.xpm"
-#include "Images/Pause_Normal.xpm"
+//#include "Images/Previous_Hoverl.xpm"
+//#include "Images/Previous_click.xpm"
+//
+//#include "Images/Play_Clickl.xpm"
+//#include "Images/Play_Hover.xpm"
+//
+//#include "Images/Stop_Click.xpm"
+//#include "Images/Stop_Hover.xpm"
+//#include "Images/Next_Click.xpm"
+//#include "Images/Next_Hover.xpm"
+//
+//#include "Images/Pause_Click.xpm"
+//#include "Images/Pause_Hover.xpm"
+//#include "Images/Pause_Normal.xpm"
 
 #include "Images/click_play.xpm"
 #include "Images/click_skip_backward.xpm"
@@ -49,11 +49,11 @@
 
 #include "Images/hover_skip_forward.xpm"
 #include "Images/hover_stop_playing.xpm"
-#include "Images/play.xpm"
+//#include "Images/play.xpm"
 
-#include "Images/skip_backward.xpm"
-#include "Images/skip_forward.xpm"
-#include "Images/stop_playing.xpm"
+//#include "Images/skip_backward.xpm"
+//#include "Images/skip_forward.xpm"
+//#include "Images/stop_playing.xpm"
 
 #include "Images/pause.xpm"
 #include "Images/click_pause.xpm"
@@ -78,11 +78,7 @@ BEGIN_EVENT_TABLE(SMPDlg,wxDialog)
 	EVT_DROP_FILES(SMPDlg::SMPDlgDropFiles)
 	EVT_BUTTON(ID_FINDPREVBUTTON,SMPDlg::FindPrevButtonClick)
 	EVT_BUTTON(ID_FINDNEXTBUTTON,SMPDlg::FindNextButtonClick)
-	EVT_TEXT_ENTER(ID_FINDTEXTEDIT,SMPDlg::FindTextEditEnter)
-	EVT_MENU(ID_MNU_LOADPLAYLIST_1028 , SMPDlg::LoadPlaylistClick)
-	EVT_MENU(ID_MNU_SAVEPLAYLIST_1029 , SMPDlg::SavePlaylistClick)
-	EVT_MENU(ID_MNU_ADDFILES_1026 , SMPDlg::WxButton2Click)
-	EVT_MENU(ID_MNU_ADDFOLDER_1027 , SMPDlg::WxButton1Click)
+	EVT_TIMER(ID_WXTIMER1,SMPDlg::WxTimer1Timer)
 	EVT_MENU(ID_MNU_PLAY_PAUSE_1019 , SMPDlg::PlayButtonClick)
 	EVT_MENU(ID_MNU_STOP_1020 , SMPDlg::StopButtonClick)
 	EVT_MENU(ID_MNU_NEXT_1021 , SMPDlg::NextButtonClick)
@@ -91,10 +87,14 @@ BEGIN_EVENT_TABLE(SMPDlg,wxDialog)
 	EVT_MENU(ID_MNU_SAVEPLAYLIST_1024 , SMPDlg::SavePlaylistClick)
 	EVT_UPDATE_UI(ID_MNU_SAVEPLAYLIST_1024 , SMPDlg::SavePlaylistUpdateUI0)
 	EVT_MENU(ID_MNU_LOADPLAYLIST_1025 , SMPDlg::LoadPlaylistClick)
-	EVT_TIMER(ID_WXTIMER1,SMPDlg::WxTimer1Timer)
+	EVT_MENU(ID_MNU_ADDFILES_1026 , SMPDlg::WxButton2Click)
+	EVT_MENU(ID_MNU_ADDFOLDER_1027 , SMPDlg::WxButton1Click)
+	EVT_MENU(ID_MNU_LOADPLAYLIST_1028 , SMPDlg::LoadPlaylistClick)
+	EVT_MENU(ID_MNU_SAVEPLAYLIST_1029 , SMPDlg::SavePlaylistClick)
 	
 	EVT_LIST_ITEM_ACTIVATED(ID_WXLISTCTRL1,SMPDlg::WxListCtrl1ItemActivated)
 	EVT_LIST_KEY_DOWN(ID_WXLISTCTRL1,SMPDlg::WxListCtrl1KeyDown)
+	EVT_TEXT_ENTER(,SMPDlg::FindTextEditEnter)
 	EVT_BUTTON(ID_FINDBUTTON,SMPDlg::FindButtonClick)
 	
 	EVT_MEDIA_STOP(ID_WXMEDIACTRL1,SMPDlg::WxMediaCtrl1MediaStop)
@@ -247,6 +247,10 @@ void SMPDlg::CreateGUIControls()
 	SearchPanel->Show(false);
 	WxFlexGridSizer1->Add(SearchPanel,0,wxALIGN_LEFT | wxALL,5);
 
+	WxStaticText1 = new wxStaticText(SearchPanel, ID_WXSTATICTEXT1, wxT("Search for File : "), wxPoint(16, 8), wxDefaultSize, 0, wxT("WxStaticText1"));
+
+	FindTextEdit = new wxTextCtrl(SearchPanel, -1, wxT(""), wxPoint(104, 5), wxSize(236, 22), 0, wxDefaultValidator, wxT("FindTextEdit"));
+
 	WxListCtrl1 = new wxListCtrl(WxPanel1, ID_WXLISTCTRL1, wxPoint(61, 91), wxSize(627, 165), wxLC_REPORT | wxLC_AUTOARRANGE | wxLC_EDIT_LABELS, wxDefaultValidator, wxT("WxListCtrl1"));
 	WxListCtrl1->InsertColumn(0,wxT("Queue"),wxLIST_FORMAT_LEFT,47 );
 	WxListCtrl1->InsertColumn(0,wxT("Path"),wxLIST_FORMAT_LEFT,100 );
@@ -254,8 +258,11 @@ void SMPDlg::CreateGUIControls()
 	WxListCtrl1->InsertColumn(0,wxT("Directory"),wxLIST_FORMAT_LEFT,100 );
 	WxFlexGridSizer1->Add(WxListCtrl1,1,wxALIGN_LEFT | wxEXPAND | wxALL,5);
 
-	WxTimer1 = new wxTimer();
-	WxTimer1->SetOwner(this, ID_WXTIMER1);
+	PlaylistMenu = new wxMenu(wxT(""));PlaylistMenu->Append(ID_MNU_LOADPLAYLIST_1028, wxT("Load Playlist"), wxT(""), wxITEM_NORMAL);
+	PlaylistMenu->Append(ID_MNU_SAVEPLAYLIST_1029, wxT("Save Playlist"), wxT(""), wxITEM_NORMAL);
+
+	AddMenu = new wxMenu(wxT(""));AddMenu->Append(ID_MNU_ADDFILES_1026, wxT("Add Files"), wxT(""), wxITEM_NORMAL);
+	AddMenu->Append(ID_MNU_ADDFOLDER_1027, wxT("Add Folder"), wxT(""), wxITEM_NORMAL);
 
 	WxPopupMenu1 = new wxMenu(wxT(""));WxPopupMenu1->Append(ID_MNU_PLAY_PAUSE_1019, wxT("Play/Pause"), wxT(""), wxITEM_NORMAL);
 	WxPopupMenu1->Append(ID_MNU_STOP_1020, wxT("Stop"), wxT(""), wxITEM_NORMAL);
@@ -265,19 +272,12 @@ void SMPDlg::CreateGUIControls()
 	WxPopupMenu1->Append(ID_MNU_SAVEPLAYLIST_1024, wxT("Save Playlist"), wxT(""), wxITEM_NORMAL);
 	WxPopupMenu1->Append(ID_MNU_LOADPLAYLIST_1025, wxT("Load Playlist"), wxT(""), wxITEM_NORMAL);
 
-	AddMenu = new wxMenu(wxT(""));AddMenu->Append(ID_MNU_ADDFILES_1026, wxT("Add Files"), wxT(""), wxITEM_NORMAL);
-	AddMenu->Append(ID_MNU_ADDFOLDER_1027, wxT("Add Folder"), wxT(""), wxITEM_NORMAL);
+	WxTimer1 = new wxTimer();
+	WxTimer1->SetOwner(this, ID_WXTIMER1);
 
-	PlaylistMenu = new wxMenu(wxT(""));PlaylistMenu->Append(ID_MNU_LOADPLAYLIST_1028, wxT("Load Playlist"), wxT(""), wxITEM_NORMAL);
-	PlaylistMenu->Append(ID_MNU_SAVEPLAYLIST_1029, wxT("Save Playlist"), wxT(""), wxITEM_NORMAL);
+	FindNextButton = new wxButton(SearchPanel, ID_FINDNEXTBUTTON, wxT("Next"), wxPoint(355, 7), wxSize(52, 19), 0, wxDefaultValidator, wxT("FindNextButton"));
 
-	WxStaticText1 = new wxStaticText(SearchPanel, ID_WXSTATICTEXT1, wxT("Search for File : "), wxPoint(16, 7), wxDefaultSize, 0, wxT("WxStaticText1"));
-
-	FindTextEdit = new wxTextCtrl(SearchPanel, ID_FINDTEXTEDIT, wxT(""), wxPoint(104, 4), wxSize(236, 22), wxTE_PROCESS_ENTER, wxDefaultValidator, wxT("FindTextEdit"));
-
-	FindNextButton = new wxButton(SearchPanel, ID_FINDNEXTBUTTON, wxT("Next"), wxPoint(359, 4), wxSize(47, 23), 0, wxDefaultValidator, wxT("FindNextButton"));
-
-	FindPrevButton = new wxButton(SearchPanel, ID_FINDPREVBUTTON, wxT("Prev"), wxPoint(415, 5), wxSize(47, 21), 0, wxDefaultValidator, wxT("FindPrevButton"));
+	FindPrevButton = new wxButton(SearchPanel, ID_FINDPREVBUTTON, wxT("Prev"), wxPoint(420, 7), wxSize(52, 19), 0, wxDefaultValidator, wxT("FindPrevButton"));
 
 	SetTitle(wxT("DSMP"));
 	SetIcon(Self_SMPDlg_XPM);
@@ -1257,10 +1257,10 @@ void SMPDlg::HotKeyStop(wxKeyEvent& event)
 	PlayButton->SetBitmapLabel(PlayButton_normal_BITMAP);
 
 
-	wxBitmap PlayButton_hover_BITMAP (Play_Hover_xpm);
+	wxBitmap PlayButton_hover_BITMAP (hover_play_xpm);
 	PlayButton->SetBitmapHover(PlayButton_hover_BITMAP);
 
-	wxBitmap PlayButton_click_BITMAP (Play_Clickl_xpm);
+	wxBitmap PlayButton_click_BITMAP (click_play_xpm);
 	PlayButton->SetBitmapSelected(PlayButton_click_BITMAP);	
 	
 }
