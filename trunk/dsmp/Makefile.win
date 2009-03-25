@@ -1,21 +1,21 @@
 # Project: DSMP
 # Compiler: Default GCC compiler
 # Compiler Type: MingW 3
-# Makefile created by wxDev-C++ 7.0 on 25-03-09 01:12
+# Makefile created by wxDev-C++ 7.0 on 25-03-09 23:38
 
 CPP       = g++.exe
 CC        = gcc.exe
 WINDRES   = "windres.exe"
 OBJ       = Objects/MingW/SMPApp.o Objects/MingW/SMPDlg.o Objects/MingW/SMP_private.res
 LINKOBJ   = Objects/MingW/SMPApp.o Objects/MingW/SMPDlg.o Objects/MingW/SMP_private.res
-LIBS      = -L"C:/Program Files/Dev-Cpp/Lib" -lwxmsw28_treelistctrl -mwindows -lwxmsw28 -lwxmsw28_gl -lwxtiff -lwxjpeg -lwxpng -lwxzlib -lwxregex -lwxexpat -lkernel32 -luser32 -lgdi32 -lcomdlg32 -lwinspool -lwinmm -lshell32 -lcomctl32 -lole32 -loleaut32 -luuid -lrpcrt4 -ladvapi32 -lwsock32 -lodbc32 -lopengl32  -g3 
+LIBS      = -L"C:/Program Files/Dev-Cpp/Lib" -lwxmsw28_treelistctrl -mwindows -lwxmsw28 -lwxmsw28_gl -lwxtiff -lwxjpeg -lwxpng -lwxzlib -lwxregex -lwxexpat -lkernel32 -luser32 -lgdi32 -lcomdlg32 -lwinspool -lwinmm -lshell32 -lcomctl32 -lole32 -loleaut32 -luuid -lrpcrt4 -ladvapi32 -lwsock32 -lodbc32 -lopengl32  -s 
 INCS      = -I"C:/Program Files/Dev-Cpp/Include"
 CXXINCS   = -I"C:/Program Files/Dev-Cpp/lib/gcc/mingw32/3.4.5/include" -I"C:/Program Files/Dev-Cpp/include/c++/3.4.5/backward" -I"C:/Program Files/Dev-Cpp/include/c++/3.4.5/mingw32" -I"C:/Program Files/Dev-Cpp/include/c++/3.4.5" -I"C:/Program Files/Dev-Cpp/include" -I"C:/Program Files/Dev-Cpp/" -I"C:/Program Files/Dev-Cpp/include/3rdparty/wx/plotctrl" -I"C:/Program Files/Dev-Cpp/include/3rdparty/wx/sheet" -I"C:/Program Files/Dev-Cpp/include/3rdparty/wx/treemultictrl" -I"C:/Program Files/Dev-Cpp/include/3rdparty/wx/things" -I"C:/Program Files/Dev-Cpp/include/3rdparty/wx" -I"C:/Program Files/Dev-Cpp/include/3rdparty" -I"C:/Program Files/Dev-Cpp/include/common/wx/msw" -I"C:/Program Files/Dev-Cpp/include/common/wx/generic" -I"C:/Program Files/Dev-Cpp/include/common/wx/fl" -I"C:/Program Files/Dev-Cpp/include/common/wx/gizmos" -I"C:/Program Files/Dev-Cpp/include/common/wx/html" -I"C:/Program Files/Dev-Cpp/include/common/wx/mmedia" -I"C:/Program Files/Dev-Cpp/include/common/wx/net" -I"C:/Program Files/Dev-Cpp/include/common/wx/ogl" -I"C:/Program Files/Dev-Cpp/include/common/wx/plot" -I"C:/Program Files/Dev-Cpp/include/common/wx/protocol" -I"C:/Program Files/Dev-Cpp/include/common/wx/stc" -I"C:/Program Files/Dev-Cpp/include/common/wx/svg" -I"C:/Program Files/Dev-Cpp/include/common/wx/xml" -I"C:/Program Files/Dev-Cpp/include/common/wx/xrc" -I"C:/Program Files/Dev-Cpp/include/common/wx" -I"C:/Program Files/Dev-Cpp/include/common"
 RCINCS    = --include-dir "C:/PROGRA~1/Dev-Cpp/include/common"
 BIN       = Output/MingW/DSMP.exe
 DEFINES   = -D__WXMSW__ -D__GNUWIN32__ -D__WIN95__
-CXXFLAGS  = $(CXXINCS) $(DEFINES) -fno-exceptions -fno-pcc-struct-return -fstrict-aliasing -Wall -D__WXMSW__ -D__GNUWIN32__ -D__WIN95__   -fexpensive-optimizations -O3 -g3
-CFLAGS    = $(INCS) $(DEFINES) -fno-exceptions -fno-pcc-struct-return -fstrict-aliasing -Wall -D__WXMSW__ -D__GNUWIN32__ -D__WIN95__   -fexpensive-optimizations -O3 -g3
+CXXFLAGS  = $(CXXINCS) $(DEFINES) -fno-exceptions -fno-pcc-struct-return -fstrict-aliasing -Wall -D__WXMSW__ -D__GNUWIN32__ -D__WIN95__   -fexpensive-optimizations -O3
+CFLAGS    = $(INCS) $(DEFINES) -fno-exceptions -fno-pcc-struct-return -fstrict-aliasing -Wall -D__WXMSW__ -D__GNUWIN32__ -D__WIN95__   -fexpensive-optimizations -O3
 GPROF     = gprof.exe
 RM        = rm -f
 WXLIBNAME = wxmsw28
@@ -30,10 +30,10 @@ clean: clean-custom
 $(BIN): $(OBJ)
 	$(LINK) $(LINKOBJ) -o "Output\MingW\DSMP.exe" $(LIBS) 
 
-Objects/MingW/SMPApp.o: $(GLOBALDEPS) SMPApp.cpp SMPApp.h SMPDlg.h filelist.h
+Objects/MingW/SMPApp.o: $(GLOBALDEPS) SMPApp.cpp
 	$(CPP) -c SMPApp.cpp -o Objects/MingW/SMPApp.o $(CXXFLAGS)
 
-Objects/MingW/SMPDlg.o: $(GLOBALDEPS) SMPDlg.cpp SMPDlg.h filelist.h Images/Self_SMPDlg_XPM.xpm Images/SMPDlg_NextButton_XPM.xpm Images/SMPDlg_StopButton_XPM.xpm Images/SMPDlg_PlayButton_XPM.xpm Images/SMPDlg_PreviousButton_XPM.xpm Images/Previous_Hoverl.xpm Images/Previous_click.xpm Images/Play_Clickl.xpm Images/Play_Hover.xpm Images/Stop_Click.xpm Images/Stop_Hover.xpm Images/Next_Click.xpm Images/Next_Hover.xpm Images/Pause_Click.xpm Images/Pause_Hover.xpm Images/Pause_Normal.xpm Images/click_play.xpm Images/click_skip_backward.xpm Images/click_skip_forward.xpm Images/click_stop_playing.xpm Images/hover_play.xpm Images/hover_skip_backward.xpm Images/hover_skip_forward.xpm Images/hover_stop_playing.xpm Images/play.xpm Images/skip_backward.xpm Images/skip_forward.xpm Images/stop_playing.xpm Images/pause.xpm Images/click_pause.xpm Images/hover_pause.xpm
+Objects/MingW/SMPDlg.o: $(GLOBALDEPS) SMPDlg.cpp
 	$(CPP) -c SMPDlg.cpp -o Objects/MingW/SMPDlg.o $(CXXFLAGS)
 
 Objects/MingW/SMP_private.res: Objects/MingW/SMP_private.rc SMPApp.rc 
