@@ -237,7 +237,7 @@ void SMPDlg::CreateGUIControls()
 	WxSlider2->SetRange(0,100);
 	WxSlider2->SetValue(0);
 
-	WxMediaCtrl1 = new wxMediaCtrl(WxPanel, ID_WXMEDIACTRL1,wxT(""), wxPoint(412, 10), wxSize(0, 0) );
+	WxMediaCtrl1 = new wxMediaCtrl(WxPanel, ID_WXMEDIACTRL1,wxT(""), wxPoint(412, 10), wxSize(0, 0),0, wxMEDIABACKEND_WMP10 );
 	WxMediaCtrl1->Show(false);
 	WxMediaCtrl1->Enable(false);
 	WxMediaCtrl1->ShowPlayerControls(wxMEDIACTRLPLAYERCONTROLS_NONE);
